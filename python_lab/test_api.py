@@ -90,3 +90,50 @@ def test_health_endpoint():
 
     assert response.status_code == 200
     assert response.json() == {"status": "healthy"}
+
+def test_extract_whitespace_only_text():
+    response = client.post(
+        "/extract",
+        json={"text": "   "},
+    )
+
+    assert response.status_code == 422
+
+def test_chat_success():
+    with patch(
+        "main.generate_response",
+        return_value="FastAPI is a Python framework for APIs.",
+    ) as mock_generate:
+        response = client.post(
+            "/chat",
+            json={"message": "What is FastAPI?"},
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "reply": "FastAPI is a Python framework for APIs."
+    }
+    mock_generate.assert_called_once()
+
+def test_chat_empty_message():
+    response = client.post(
+        "/chat",
+        json={"message": ""},
+    )
+
+    assert response.status_code == 422
+
+def test_chat_llm_failure():
+    with patch(
+        "main.generate_response",
+        side_effect=RuntimeError("API unavailable"),
+    ):
+        response = client.post(
+            "/chat",
+            json={"message": "Hello"},
+        )
+
+    assert response.status_code == 502
+    assert response.json() == {
+        "detail": "The chat service is temporarily unavailable."
+    }

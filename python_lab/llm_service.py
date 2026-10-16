@@ -1,7 +1,12 @@
 import os
-
+import logging
 from dotenv import load_dotenv
 from openai import OpenAI, APIConnectionError, APIStatusError, RateLimitError
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -37,6 +42,8 @@ def generate_response(
         choice = response.choices[0]
         content = choice.message.content
 
+        logger.info("LLM request completed. Model: %s", response.model)
+
         print("Model used:", response.model)
         print("Finish reason:", choice.finish_reason)
 
@@ -52,16 +59,19 @@ def generate_response(
         return content
 
     except RateLimitError:
+        logger.warning("LLM request was rate-limited.")
         raise RuntimeError(
             "The model is rate-limited. Try again later."
         ) from None
 
     except APIConnectionError:
+        logger.warning("Could not connect to the LLM API.")
         raise RuntimeError(
             "Could not connect to the API. Check your internet connection."
         ) from None
 
     except APIStatusError as error:
+        logger.error("LLM API returned HTTP %s.", error.status_code)
         raise RuntimeError(
             f"The API returned an error: HTTP {error.status_code}"
         ) from None
