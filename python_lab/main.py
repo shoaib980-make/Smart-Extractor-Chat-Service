@@ -1,7 +1,9 @@
-
+import json
+from fastapi.responses import StreamingResponse
+from llm_service import stream_response
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, field_validator
-
+from fastapi.middleware.cors import CORSMiddleware
 from structured_extractor import extract_information
 from llm_service import generate_response
 
@@ -10,7 +12,16 @@ import logging
 logger = logging.getLogger(__name__)
 app = FastAPI(title="Smart Extractor API")
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 class ExtractionRequest(BaseModel):
     text: str = Field(min_length=1, max_length=10000)
 
@@ -89,7 +100,7 @@ def chat(request: ChatRequest):
         reply = generate_response(
             prompt=request.message,
             system_instruction=request.system_instruction,
-            max_tokens=800,
+            max_tokens=3000,
         )
 
         return ChatResponse(reply=reply)
@@ -131,5 +142,30 @@ def test_chat_custom_system_instruction():
     mock_generate.assert_called_once_with(
         prompt="What is a function?",
         system_instruction=instruction,
-        max_tokens=800,
+        max_tokens=3000,
+    )
+@app.post("/chat/stream")
+def chat_stream(request: ChatRequest):
+    def generate():
+        try:
+            for piece in stream_response(
+                prompt=request.message,
+                system_instruction="You are a helpful assistant.",
+                max_tokens=3000,
+            ):
+                yield f"data: {json.dumps({'chunk': piece})}\n\n"
+
+            yield f"data: {json.dumps({'done': True})}\n\n"
+
+        except Exception:
+            logger.exception("Streaming chat failed")
+            yield f"data: {json.dumps({'error': 'Chat service temporarily unavailable.'})}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
     )

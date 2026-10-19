@@ -26,7 +26,7 @@ response = client.chat.completions.create(
             "content": "In two simple sentences, explain what an API is."
         }
     ],
-        max_tokens=300,
+        max_tokens=3000,
     )
 
 message = response.choices[0].message

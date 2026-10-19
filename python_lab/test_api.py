@@ -158,7 +158,7 @@ def test_chat_custom_system_instruction():
     mock_generate.assert_called_once_with(
         prompt="What is a function?",
         system_instruction=instruction,
-        max_tokens=800,
+        max_tokens=3000,
     )
 
 

@@ -23,10 +23,57 @@ client = OpenAI(
     max_retries=2,
 )
 
+def log_usage(response, model):
+    usage = getattr(response, "usage", None)
+
+    if not usage:
+        logger.info("Token usage unavailable for model: %s", model)
+        return
+
+    prompt_tokens = getattr(usage, "prompt_tokens", 0) or 0
+    completion_tokens = getattr(usage, "completion_tokens", 0) or 0
+    total_tokens = getattr(
+        usage,
+        "total_tokens",
+        prompt_tokens + completion_tokens
+    ) or 0
+
+    # OpenRouter may provide the actual request cost.
+    actual_cost = getattr(usage, "cost", None)
+
+    if actual_cost is not None:
+        cost_message = f"Actual cost: ${float(actual_cost):.8f}"
+    else:
+        input_rate = float(
+            os.getenv("OPENROUTER_INPUT_PRICE_PER_MILLION", "0")
+        )
+        output_rate = float(
+            os.getenv("OPENROUTER_OUTPUT_PRICE_PER_MILLION", "0")
+        )
+
+        if input_rate > 0 or output_rate > 0:
+            estimated_cost = (
+                prompt_tokens * input_rate
+                + completion_tokens * output_rate
+            ) / 1_000_000
+            cost_message = f"Estimated cost: ${estimated_cost:.8f}"
+        else:
+            cost_message = "Cost unavailable: pricing not configured"
+
+    logger.info(
+        "Model: %s | Input tokens: %s | Output tokens: %s "
+        "| Total tokens: %s | %s",
+        model,
+        prompt_tokens,
+        completion_tokens,
+        total_tokens,
+        cost_message,
+    )
+
 def generate_response(
     prompt: str,
     system_instruction: str = "You are a helpful assistant.",
-    max_tokens: int = 800,
+    max_tokens: int = 3000,
 ) -> str:
     try:
         response = client.chat.completions.create(
@@ -38,8 +85,8 @@ def generate_response(
             max_tokens=max_tokens,
             
         )
-
-        choice = response.choices[0]
+        log_usage(response, model)
+        choice = response.choices[0] 
         content = choice.message.content
 
         logger.info("LLM request completed. Model: %s", response.model)
@@ -75,3 +122,38 @@ def generate_response(
         raise RuntimeError(
             f"The API returned an error: HTTP {error.status_code}"
         ) from None
+
+
+
+
+def stream_response(prompt, system_instruction, max_tokens=3000):
+    try:
+        stream = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=max_tokens,
+            stream=True,
+        )
+
+        for chunk in stream:
+            if not chunk.choices:
+                continue
+
+            choice = chunk.choices[0]
+            content = choice.delta.content
+
+            if content:
+                yield content
+
+            if choice.finish_reason:
+                logger.info(
+                    "Stream finished. Reason: %s",
+                    choice.finish_reason,
+                )
+
+    except Exception:
+        logger.exception("Error while streaming model response")
+        raise

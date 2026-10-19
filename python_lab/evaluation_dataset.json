@@ -1,0 +1,43 @@
+
+[
+  {
+    "id": 1,
+    "text": "OpenAI released a new AI tool that helps developers build applications faster. It supports Python and JavaScript and aims to improve developer productivity."
+  },
+  {
+    "id": 2,
+    "text": "GreenLeaf Foods announced a new organic food delivery service in Lahore. Customers can order fresh vegetables and fruits through its mobile application."
+  },
+  {
+    "id": 3,
+    "text": "TechNova hired 50 software engineers this month to expand its cloud computing and artificial intelligence teams."
+  },
+  {
+    "id": 4,
+    "text": "The University of Punjab organized a technology conference where students presented projects related to robotics, machine learning, and renewable energy."
+  },
+  {
+    "id": 5,
+    "text": "HealthPlus launched an online appointment system that allows patients to book doctor consultations and receive reminders through SMS."
+  },
+  {
+    "id": 6,
+    "text": "A local startup introduced an electric bicycle with a longer battery life, faster charging, and a lightweight aluminum frame."
+  },
+  {
+    "id": 7,
+    "text": "The finance department reported a 12 percent increase in quarterly revenue due to higher sales and reduced operational costs."
+  },
+  {
+    "id": 8,
+    "text": "Researchers developed a machine learning model that identifies plant diseases from leaf images and helps farmers detect crop problems earlier."
+  },
+  {
+    "id": 9,
+    "text": "The city administration announced a tree plantation campaign to improve air quality, increase green spaces, and reduce urban heat."
+  },
+  {
+    "id": 10,
+    "text": "CyberSafe introduced a security training program to teach employees how to recognize phishing emails, protect passwords, and report suspicious activity."
+  }
+]

@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "total_documents": 10,
+    "successful_extractions": 0,
+    "valid_json_results": 0,
+    "schema_valid_results": 0,
+    "success_rate_percent": 0.0,
+    "valid_json_rate_percent": 0.0,
+    "schema_valid_rate_percent": 0.0
+  },
+  "results": [
+    {
+      "id": 1,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 2.29
+    },
+    {
+      "id": 2,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.37
+    },
+    {
+      "id": 3,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.5
+    },
+    {
+      "id": 4,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.38
+    },
+    {
+      "id": 5,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.54
+    },
+    {
+      "id": 6,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.36
+    },
+    {
+      "id": 7,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.6
+    },
+    {
+      "id": 8,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.41
+    },
+    {
+      "id": 9,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.58
+    },
+    {
+      "id": 10,
+      "success": false,
+      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
+      "elapsed_seconds": 1.5
+    }
+  ]
+}
