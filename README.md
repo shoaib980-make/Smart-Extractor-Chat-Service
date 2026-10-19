@@ -1,96 +1,78 @@
 
 # Smart Extractor & Chat Service
 
-An LLM-powered text extraction and chat API built with **Python, FastAPI, and OpenRouter**. This project demonstrates reusable LLM integration, structured information extraction, customizable chat instructions, input validation, error handling, logging, and automated API testing.
+A Python API that uses Large Language Models (LLMs) to extract structured information from text and answer user questions.
 
 ## Features
 
-- Integrates with large language models through the OpenRouter API.
-- Provides a reusable LLM service with configurable model selection.
-- Extracts structured information from text.
-- Returns extracted titles, summaries, keywords, and categories as JSON.
-- Supports an AI chat endpoint with customizable system instructions.
-- Validates incoming requests using Pydantic.
-- Parses and validates structured LLM output.
-- Handles API connection errors, rate limits, and unexpected failures.
-- Includes application logging for debugging and monitoring.
-- Provides interactive API documentation through Swagger UI.
-- Includes automated API tests using pytest and mocked LLM responses.
-- Contains Python and Node.js API experiments.
+- **Structured text extraction** into a title, summary, keywords, and category
+- **LLM-powered chat** with customizable system instructions
+- **FastAPI** endpoints with automatic Swagger documentation
+- **Pydantic** request and response validation
+- **Error handling** for invalid inputs and LLM service failures
+- **Automated tests** using pytest and mocked LLM responses
+- **Environment-based configuration** for API credentials
 
 ## Tech Stack
 
-- **Language:** Python, JavaScript (Node.js)
-- **API Framework:** FastAPI
-- **Data Validation:** Pydantic
-- **LLM Integration:** OpenRouter API, OpenAI Python SDK
-- **Environment Configuration:** python-dotenv
-- **Token Counting:** tiktoken
-- **Testing:** pytest, HTTPX
-- **API Server:** Uvicorn
+- Python
+- FastAPI
+- Pydantic
+- OpenAI-compatible SDK
+- OpenRouter
+- pytest
+- python-dotenv
 
 ## Project Structure
 
 ```text
-Smart-Extractor-Chat-Service/
+Smart Extractor & Chat Service/
 ├── python_lab/
-│   ├── .env
+│   ├── main.py
 │   ├── llm_service.py
 │   ├── structured_extractor.py
-│   ├── main.py
-│   ├── token_count.py
-│   ├── first_call.py
-│   ├── openrouter_call.py
-│   ├── test_llm_service.py
-│   ├── test_structured_output.py
+│   ├── test_api.py
 │   ├── test_extractor.py
 │   ├── test_error_handling.py
-│   └── test_api.py
+│   ├── test_llm_service.py
+│   ├── test_structured_output.py
+│   ├── token_count.py
+│   ├── requirements.txt
+│   └── .env.example
 ├── node_lab/
-│   ├── .env
-│   └── first_call.mjs
 ├── .gitignore
 └── README.md
 ```
 
-> The `.env` files contain local configuration and should never be committed to Git.
+## Setup
 
-## Getting Started
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/shoaib980-make/Smart-Extractor-Chat-Service.git
-cd Smart-Extractor-Chat-Service
+git clone <your-repository-url>
+cd "Smart Extractor & Chat Service"
 ```
 
-### 2. Set Up the Python Environment
-
-Navigate to the Python project:
+### 2. Create and activate a virtual environment
 
 ```bash
 cd python_lab
-```
-
-Create a virtual environment:
-
-```bash
 python -m venv .venv
 ```
 
-Activate it on Windows Git Bash:
+Git Bash on Windows:
 
 ```bash
-source .venv/Scripts/activate
+source ".venv/Scripts/activate"
 ```
 
-Install the dependencies:
+### 3. Install dependencies
 
 ```bash
-python -m pip install openai python-dotenv tiktoken fastapi uvicorn pytest httpx
+pip install -r requirements.txt
 ```
 
-### 3. Configure Environment Variables
+### 4. Configure environment variables
 
 Create a `.env` file inside `python_lab/`:
 
@@ -99,145 +81,105 @@ OPENROUTER_API_KEY=your_api_key_here
 OPENROUTER_MODEL=nvidia/nemotron-3-super-120b-a12b:free
 ```
 
-Replace `your_api_key_here` with your own OpenRouter API key.
+Use your own API key. Never commit `.env` to GitHub.
 
-**Security:** Never commit your `.env` file or expose your API key in source code, screenshots, logs, or public repositories.
+## Run the API
 
-### 4. Run the API
-
-From the `python_lab/` directory, run:
+From inside `python_lab/`:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-The API will start at `http://127.0.0.1:8000`.
+Open the interactive API documentation:
 
-### 5. Explore the API
+http://127.0.0.1:8000/docs
 
-| Endpoint | Method | Description |
+## API Endpoints
+
+| Method | Endpoint | Purpose |
 |---|---|---|
-| `/` | GET | Confirms that the API is running |
-| `/health` | GET | Returns the health status |
-| `/extract` | POST | Extracts structured information from text |
-| `/chat` | POST | Generates an AI response using a prompt and system instructions |
-| `/docs` | GET | Opens interactive Swagger API documentation |
+| GET | `/` | API welcome message |
+| GET | `/health` | Health check |
+| POST | `/extract` | Extract structured information |
+| POST | `/chat` | Generate an LLM response |
 
-Open these URLs in your browser:
+## Example Requests
 
-- Home: http://127.0.0.1:8000/
-- Health check: http://127.0.0.1:8000/health
-- Swagger UI: http://127.0.0.1:8000/docs
+### Extract information
 
-## API Usage
-
-### 1. Extract Structured Information
-
-**Endpoint:** `POST /extract`
-
-Extract a title, summary, keywords, and category from input text.
-
-Example request:
+POST `/extract`
 
 ```json
 {
-  "text": "FastAPI is a Python framework for building APIs. It supports type hints and automatic API documentation."
+  "text": "Python is a programming language used in web development, automation, and artificial intelligence."
 }
 ```
 
-Example response:
+Expected response shape:
 
 ```json
 {
-  "title": "Introduction to FastAPI",
-  "summary": "FastAPI is a Python framework for building APIs with type hints and automatic documentation.",
-  "keywords": [
-    "FastAPI",
-    "Python",
-    "APIs",
-    "type hints"
-  ],
+  "title": "Python Programming Language",
+  "summary": "Python is used for web development, automation, and AI.",
+  "keywords": ["Python", "Web Development", "Automation", "AI"],
   "category": "Technology"
 }
 ```
 
-The actual extracted values depend on the LLM response.
+The exact extracted content may vary depending on the LLM response.
 
-### 2. Chat with the LLM
+### Chat
 
-**Endpoint:** `POST /chat`
-
-Send a message to the LLM and optionally customize its behavior with a system instruction.
-
-Example request:
+POST `/chat`
 
 ```json
 {
-  "message": "Explain Python functions in simple terms.",
-  "system_instruction": "You are a patient Python tutor. Explain concepts with simple examples."
+  "message": "Explain FastAPI in simple words.",
+  "system_instruction": "You are a helpful programming tutor."
 }
 ```
 
-Example response:
+Expected response shape:
 
 ```json
 {
-  "reply": "A Python function is a reusable block of code that performs a specific task..."
+  "reply": "FastAPI is a Python framework for building APIs..."
 }
 ```
 
-The actual response depends on the selected model.
-
-If `system_instruction` is omitted, the API uses its default instruction.
-
-## Error Handling and Validation
-
-The API includes input validation and error handling to improve reliability.
-
-- **200 OK:** Request completed successfully.
-- **422 Unprocessable Entity:** Request data is missing, invalid, or fails validation.
-- **502 Bad Gateway:** An upstream LLM service fails or returns unusable data.
-- **500 Internal Server Error:** An unexpected server-side error occurs.
-
-Empty or whitespace-only text is rejected, and unexpected errors are logged for debugging.
+The reply will vary depending on the model.
 
 ## Run Tests
 
-From the `python_lab/` directory, execute:
+From inside `python_lab/`:
 
 ```bash
 python -m pytest -v
 ```
 
-The test suite covers API endpoints, input validation, successful responses, LLM failures, and unexpected errors.
+Tests that mock the LLM service can run without making real model requests.
 
-LLM calls are mocked in API tests where appropriate, allowing tests to run without making real model requests.
+## Security Notes
 
-## Learning Goals
-
-This project explores:
-
-- LLM API integration
-- Prompt engineering and system instructions
-- Token counting
-- Structured information extraction
-- JSON parsing and output validation
-- Environment variable management
-- FastAPI routing and request validation
-- Pydantic data models
-- Exception handling and logging
-- Automated testing with pytest
-- Mocking external API dependencies
-- REST API development
+- Keep API keys in environment variables.
+- Do not commit `.env` files.
+- Validate incoming request data.
+- Avoid returning internal exception details to API users.
+- Use appropriate request limits and logging.
 
 ## Future Improvements
 
-- Add authentication and rate limiting.
-- Support file uploads and document extraction.
-- Add conversation history and persistent storage.
-- Introduce response caching.
-- Add Docker-based deployment.
-- Deploy the API to a cloud platform.
+- Add rate limiting and authentication.
+- Add persistent chat history.
+- Support PDF and document uploads.
+- Add Docker deployment.
+- Add CI with GitHub Actions.
+
+## License
+
+Add a license if you intend to distribute this project publicly.
+
 
 ## Author
 

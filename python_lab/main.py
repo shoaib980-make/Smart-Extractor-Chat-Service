@@ -12,7 +12,7 @@ app = FastAPI(title="Smart Extractor API")
 
 
 class ExtractionRequest(BaseModel):
-    text: str = Field(min_length=1)
+    text: str = Field(min_length=1, max_length=10000)
 
     @field_validator("text")
     @classmethod
@@ -21,8 +21,10 @@ class ExtractionRequest(BaseModel):
             raise ValueError("Text cannot contain only whitespace.")
         return value
 
+    
 class ChatRequest(BaseModel):
-    message: str = Field(min_length=1)
+    message: str = Field(min_length=1, max_length=5000)
+
     system_instruction: str = Field(
         default="You are a helpful assistant. Answer clearly and accurately.",
         min_length=1,

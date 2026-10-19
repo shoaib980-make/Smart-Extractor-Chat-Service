@@ -137,3 +137,98 @@ def test_chat_llm_failure():
     assert response.json() == {
         "detail": "The chat service is temporarily unavailable."
     }
+
+def test_chat_custom_system_instruction():
+    instruction = "You are a patient Python tutor."
+
+    with patch(
+        "main.generate_response",
+        return_value="A function is reusable code.",
+    ) as mock_generate:
+        response = client.post(
+            "/chat",
+            json={
+                "message": "What is a function?",
+                "system_instruction": instruction,
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.json()["reply"] == "A function is reusable code."
+    mock_generate.assert_called_once_with(
+        prompt="What is a function?",
+        system_instruction=instruction,
+        max_tokens=800,
+    )
+
+
+def test_chat_whitespace_only_message():
+    response = client.post(
+        "/chat",
+        json={"message": "   "},
+    )
+
+    assert response.status_code == 422
+
+
+def test_chat_whitespace_only_system_instruction():
+    response = client.post(
+        "/chat",
+        json={
+            "message": "Explain Python.",
+            "system_instruction": "   ",
+        },
+    )
+
+    assert response.status_code == 422
+def test_extract_text_too_long():
+    response = client.post(
+        "/extract",
+        json={"text": "a" * 10001},
+    )
+
+    assert response.status_code == 422
+
+
+def test_chat_message_too_long():
+    response = client.post(
+        "/chat",
+        json={"message": "a" * 5001},
+    )
+
+    assert response.status_code == 422
+
+def test_chat_unexpected_error_is_logged(caplog):
+    with patch(
+        "main.generate_response",
+        side_effect=Exception("Sensitive internal detail"),
+    ):
+        with caplog.at_level("ERROR", logger="main"):
+            response = client.post(
+                "/chat",
+                json={"message": "Explain Python."},
+            )
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "detail": "An unexpected server error occurred."
+    }
+    assert "Unexpected error during chat." in caplog.text
+    assert "Sensitive internal detail" not in response.json()["detail"]
+
+def test_chat_unexpected_error_is_logged(caplog):
+    with patch(
+        "main.generate_response",
+        side_effect=Exception("Unexpected internal error"),
+    ):
+        with caplog.at_level("ERROR"):
+            response = client.post(
+                "/chat",
+                json={"message": "Hello"},
+            )
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == (
+        "An unexpected server error occurred."
+    )
+    assert "Unexpected error during chat." in caplog.text
