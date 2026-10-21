@@ -8,16 +8,18 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+from pathlib import Path
+
+_env_file = Path(__file__).resolve().parent / ".env"
+if _env_file.exists():
+    load_dotenv(dotenv_path=_env_file)
 load_dotenv()
 
 api_key = os.getenv("OPENROUTER_API_KEY")
 model = os.getenv("OPENROUTER_MODEL", "openrouter/free")
 
-if not api_key:
-    raise RuntimeError("OPENROUTER_API_KEY is missing from .env")
-
 client = OpenAI(
-    api_key=api_key,
+    api_key=api_key or "not-set",
     base_url="https://openrouter.ai/api/v1",
     timeout=30.0,
     max_retries=2,

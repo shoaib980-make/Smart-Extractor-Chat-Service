@@ -1,8 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import { useState, useRef, useEffect, useCallback } from "react";
 import "./App.css";
-
-const API = "http://127.0.0.1:8000";
+const API = import.meta.env.VITE_API_URL || "/api";
 
 function cleanMarkdown(value = "") {
   return value

@@ -1,7 +1,7 @@
 import json
 import logging
 import re
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, field_validator
@@ -16,14 +16,16 @@ from structured_extractor import (
 
 logger = logging.getLogger(__name__)
 app = FastAPI(title="Smart Extractor API")
-
+api_router = APIRouter()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://smart-extractor-chat-service-t43b.vercel.app/",
+        "http://127.0.0.1:5173",
+        "https://smart-extractor-chat-service-t43b.vercel.app",
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -74,17 +76,17 @@ def strip_safety_prefix(text: str) -> str:
     return re.sub(r"^(User\s+Safety:\s*safe\s*)+", "", text, flags=re.IGNORECASE)
 
 
-@app.get("/")
+@api_router.get("/")
 def home():
     return {"message": "Smart Extractor API is running"}
 
 
-@app.get("/health")
+@api_router.get("/health")
 def health_check():
     return {"status": "healthy"}
 
 
-@app.post("/extract", response_model=ExtractionResponse)
+@api_router.post("/extract", response_model=ExtractionResponse)
 def extract(request: ExtractionRequest):
     try:
         return extract_information(request.text)
@@ -111,7 +113,7 @@ def extract(request: ExtractionRequest):
         ) from None
 
 
-@app.post("/extract/stream")
+@api_router.post("/extract/stream")
 def extract_stream(request: ExtractionRequest):
     def generate():
         try:
@@ -151,7 +153,7 @@ def extract_stream(request: ExtractionRequest):
     )
 
 
-@app.post("/chat", response_model=ChatResponse)
+@api_router.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
     try:
         reply = generate_response(
@@ -177,7 +179,7 @@ def chat(request: ChatRequest):
         ) from None
 
 
-@app.post("/chat/stream")
+@api_router.post("/chat/stream")
 def chat_stream(request: ChatRequest):
     def generate():
         try:
@@ -210,3 +212,8 @@ def chat_stream(request: ChatRequest):
             "X-Accel-Buffering": "no",
         },
     )
+
+
+# Include router with and without /api prefix for flexibility on local and Vercel serverless
+app.include_router(api_router)
+app.include_router(api_router, prefix="/api")
