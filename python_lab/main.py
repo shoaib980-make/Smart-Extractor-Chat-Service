@@ -17,11 +17,12 @@ from structured_extractor import (
 logger = logging.getLogger(__name__)
 app = FastAPI(title="Smart Extractor API")
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://127.0.0.1:5173",
+        "https://smart-extractor-chat-service-t43b.vercel.app/",
     ],
     allow_credentials=False,
     allow_methods=["*"],
