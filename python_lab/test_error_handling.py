@@ -1,38 +1,42 @@
-
 from unittest.mock import patch
+import pytest
 from structured_extractor import extract_information
 
 sample_text = "FastAPI is a Python framework for building APIs."
 
-# Simulate an LLM returning invalid JSON.
-with patch(
-    "structured_extractor.generate_response",
-    return_value="This is not JSON",
-):
-    try:
-        extract_information(sample_text)
-    except ValueError as error:
-        print("Error handling passed:", error)
-    else:
-        print("Test failed: invalid JSON was not rejected.")
 
-# Simulate valid JSON with an incorrect field type.
-bad_json = """
-{
-    "title": "FastAPI",
-    "summary": "A Python framework",
-    "keywords": "Python, APIs",
-    "category": "Technology"
-}
-"""
+def test_invalid_json_handling():
+    # Simulate an LLM returning invalid JSON.
+    with patch(
+        "structured_extractor.generate_response",
+        return_value="This is not JSON",
+    ):
+        with pytest.raises(ValueError) as excinfo:
+            extract_information(sample_text)
+        assert "did not return valid structured data" in str(excinfo.value)
 
-with patch(
-    "structured_extractor.generate_response",
-    return_value=bad_json,
-):
-    try:
-        extract_information(sample_text)
-    except ValueError as error:
-        print("Schema validation passed:", error)
-    else:
-        print("Test failed: incorrect field type was accepted.")
+
+def test_incorrect_field_type_handling():
+    # Simulate valid JSON with an incorrect field type.
+    bad_json = """
+    {
+        "title": "FastAPI",
+        "summary": "A Python framework",
+        "keywords": "Python, APIs",
+        "category": "Technology"
+    }
+    """
+    with patch(
+        "structured_extractor.generate_response",
+        return_value=bad_json,
+    ):
+        with pytest.raises(ValueError) as excinfo:
+            extract_information(sample_text)
+        assert "did not return valid structured data" in str(excinfo.value)
+
+
+if __name__ == "__main__":
+    test_invalid_json_handling()
+    print("Error handling passed: invalid JSON was rejected.")
+    test_incorrect_field_type_handling()
+    print("Schema validation passed: incorrect field type was rejected.")

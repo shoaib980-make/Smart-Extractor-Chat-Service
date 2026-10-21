@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -21,6 +22,39 @@ class ExtractionResult(BaseModel):
     summary: str = Field(min_length=1)
     keywords: list[str]
     category: str = Field(min_length=1)
+
+
+def parse_extraction_json(raw: str) -> dict:
+    """Safely parse JSON from raw LLM output, removing safety headers, think tags, and markdown blocks."""
+    cleaned = raw.strip()
+
+    # 1. Strip <think>...</think> blocks
+    cleaned = re.sub(r"<think>[\s\S]*?</think>", "", cleaned, flags=re.IGNORECASE).strip()
+
+    # 2. Strip safety headers like "User Safety: safe"
+    cleaned = re.sub(r"^(User\s+Safety:\s*safe\s*)+", "", cleaned, flags=re.IGNORECASE).strip()
+
+    # 3. Extract JSON inside markdown code blocks ```json ... ``` or ``` ... ```
+    match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", cleaned, flags=re.IGNORECASE)
+    if match:
+        candidate = match.group(1).strip()
+        try:
+            return json.loads(candidate)
+        except Exception:
+            pass
+
+    # 4. Extract outer { ... } if preamble or postamble exists
+    first_brace = cleaned.find("{")
+    last_brace = cleaned.rfind("}")
+    if first_brace != -1 and last_brace != -1 and last_brace > first_brace:
+        candidate = cleaned[first_brace : last_brace + 1]
+        try:
+            return json.loads(candidate)
+        except Exception:
+            pass
+
+    # 5. Fallback to direct json.loads (which will raise JSONDecodeError if invalid)
+    return json.loads(cleaned)
 
 
 def extract_information(text: str) -> dict:
@@ -48,11 +82,9 @@ def extract_information(text: str) -> dict:
         )
 
         try:
-            data = json.loads(response)
+            data = parse_extraction_json(response)
             result = ExtractionResult.model_validate(data)
-            logger.info(
-                "Extraction succeeded on attempt %s.", attempt
-            )
+            logger.info("Extraction succeeded on attempt %s.", attempt)
             return result.model_dump()
 
         except json.JSONDecodeError:
@@ -62,9 +94,7 @@ def extract_information(text: str) -> dict:
         except (TypeError, ValueError) as error:
             feedback = str(error)
 
-        logger.warning(
-            "Invalid extraction output on attempt %s of 3.", attempt
-        )
+        logger.warning("Invalid extraction output on attempt %s of 3.", attempt)
 
     raise ValueError(
         "Extraction failed after 3 attempts because the model "

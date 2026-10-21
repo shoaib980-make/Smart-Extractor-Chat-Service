@@ -1,73 +1,189 @@
 {
   "summary": {
     "total_documents": 10,
-    "successful_extractions": 0,
-    "valid_json_results": 0,
-    "schema_valid_results": 0,
-    "success_rate_percent": 0.0,
-    "valid_json_rate_percent": 0.0,
-    "schema_valid_rate_percent": 0.0
+    "successful_extractions": 10,
+    "valid_json_results": 10,
+    "schema_valid_results": 10,
+    "success_rate_percent": 100.0,
+    "valid_json_rate_percent": 100.0,
+    "schema_valid_rate_percent": 100.0
   },
   "results": [
     {
       "id": 1,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 2.29
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 9.1,
+      "extracted_data": {
+        "title": "OpenAI AI Tool",
+        "summary": "A new AI tool by OpenAI that helps developers build applications faster, supporting Python and JavaScript.",
+        "keywords": [
+          "OpenAI",
+          "AI tool",
+          "developer productivity",
+          "Python"
+        ],
+        "category": "Technology"
+      }
     },
     {
       "id": 2,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.37
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 20.65,
+      "extracted_data": {
+        "title": "Organic Food Delivery Service",
+        "summary": "A new organic food delivery service launched in Lahore allows customers to order fresh vegetables and fruits through a mobile application.",
+        "keywords": [
+          "organic food",
+          "food delivery",
+          "Lahore",
+          "vegetables",
+          "fruits"
+        ],
+        "category": "Business"
+      }
     },
     {
       "id": 3,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.5
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 12.74,
+      "extracted_data": {
+        "title": "TechNova Hires Software Engineers",
+        "summary": "TechNova hired 50 software engineers to expand its cloud computing and artificial intelligence teams.",
+        "keywords": [
+          "cloud computing",
+          "artificial intelligence",
+          "software engineers",
+          "TechNova"
+        ],
+        "category": "Technology"
+      }
     },
     {
       "id": 4,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.38
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 10.66,
+      "extracted_data": {
+        "title": "University of Punjab Technology Conference",
+        "summary": "The University of Punjab organized a technology conference where students presented projects related to robotics, machine learning, and renewable energy.",
+        "keywords": [
+          "University of Punjab",
+          "technology conference",
+          "robotics",
+          "machine learning",
+          "renewable energy"
+        ],
+        "category": "Education"
+      }
     },
     {
       "id": 5,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.54
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 21.28,
+      "extracted_data": {
+        "title": "HealthPlus",
+        "summary": "An online appointment system that allows patients to book doctor consultations and receive SMS reminders",
+        "keywords": [
+          "healthcare",
+          "appointment system",
+          "doctor consultations",
+          "SMS reminders",
+          "online booking"
+        ],
+        "category": "Healthcare"
+      }
     },
     {
       "id": 6,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.36
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 64.98,
+      "extracted_data": {
+        "title": "Electric Bicycle with Extended Battery Life",
+        "summary": "A local startup introduced an electric bicycle with longer battery life, faster charging, and a lightweight aluminum frame.",
+        "keywords": [
+          "electric bicycle",
+          "battery life",
+          "fast charging",
+          "lightweight aluminum frame"
+        ],
+        "category": "Technology"
+      }
     },
     {
       "id": 7,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.6
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 15.53,
+      "extracted_data": {
+        "title": "Quarterly Revenue Increase Report",
+        "summary": "The finance department reported a 12 percent increase in quarterly revenue due to higher sales and reduced operational costs.",
+        "keywords": [
+          "finance department",
+          "12 percent increase",
+          "quarterly revenue",
+          "higher sales",
+          "reduced operational costs"
+        ],
+        "category": "Finance"
+      }
     },
     {
       "id": 8,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.41
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 5.85,
+      "extracted_data": {
+        "title": "Machine Learning Model for Plant Disease Identification",
+        "summary": "A machine learning model that identifies plant diseases from leaf images, helping farmers detect crop problems earlier.",
+        "keywords": [
+          "machine learning",
+          "plant diseases",
+          "leaf images",
+          "crop problems",
+          "farmers"
+        ],
+        "category": "Agriculture"
+      }
     },
     {
       "id": 9,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.58
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 26.93,
+      "extracted_data": {
+        "title": "Tree Plantation Campaign",
+        "summary": "The city administration announced a tree plantation campaign to improve air quality, increase green spaces, and reduce urban heat.",
+        "keywords": [
+          "tree plantation",
+          "air quality",
+          "green spaces",
+          "urban heat"
+        ],
+        "category": "Environment"
+      }
     },
     {
       "id": 10,
-      "success": false,
-      "error": "HTTP 502: {\"detail\":\"The extraction service is temporarily unavailable.\"}",
-      "elapsed_seconds": 1.5
+      "success": true,
+      "schema_errors": [],
+      "elapsed_seconds": 2.49,
+      "extracted_data": {
+        "title": "CyberSafe Security Training Program",
+        "summary": "CyberSafe introduced a security training program to teach employees how to recognize phishing emails, protect passwords, and report suspicious activity.",
+        "keywords": [
+          "security training",
+          "phishing emails",
+          "password protection",
+          "suspicious activity",
+          "employee training"
+        ],
+        "category": "Cybersecurity"
+      }
     }
   ]
 }

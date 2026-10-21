@@ -216,19 +216,61 @@ def test_chat_unexpected_error_is_logged(caplog):
     assert "Unexpected error during chat." in caplog.text
     assert "Sensitive internal detail" not in response.json()["detail"]
 
-def test_chat_unexpected_error_is_logged(caplog):
-    with patch(
-        "main.generate_response",
-        side_effect=Exception("Unexpected internal error"),
-    ):
-        with caplog.at_level("ERROR"):
-            response = client.post(
-                "/chat",
-                json={"message": "Hello"},
-            )
 
-    assert response.status_code == 500
-    assert response.json()["detail"] == (
-        "An unexpected server error occurred."
+def test_chat_stream_success():
+    with patch(
+        "main.stream_response",
+        return_value=["FastAPI ", "is ", "fast."],
+    ) as mock_stream:
+        response = client.post(
+            "/chat/stream",
+            json={
+                "message": "What is FastAPI?",
+                "system_instruction": "Be concise.",
+            },
+        )
+
+    assert response.status_code == 200
+    assert "text/event-stream" in response.headers["content-type"]
+    text = response.text
+    assert '{"chunk": "FastAPI "}' in text
+    assert '{"chunk": "is "}' in text
+    assert '{"chunk": "fast."}' in text
+    assert '{"done": true}' in text
+    mock_stream.assert_called_once_with(
+        prompt="What is FastAPI?",
+        system_instruction="Be concise.",
+        max_tokens=3000,
     )
-    assert "Unexpected error during chat." in caplog.text
+
+
+def test_chat_stream_failure():
+    with patch(
+        "main.stream_response",
+        side_effect=RuntimeError("Stream failure"),
+    ):
+        response = client.post(
+            "/chat/stream",
+            json={"message": "Hello"},
+        )
+
+    assert response.status_code == 200
+    assert '{"error": "Chat service temporarily unavailable."}' in response.text
+
+
+def test_extract_stream_success():
+    fake_json = '{"title":"FastAPI","summary":"A Python framework.","keywords":["Python","API"],"category":"Tech"}'
+    with patch(
+        "main.stream_response",
+        return_value=[fake_json],
+    ):
+        response = client.post(
+            "/extract/stream",
+            json={"text": "FastAPI is a Python framework."},
+        )
+
+    assert response.status_code == 200
+    assert "text/event-stream" in response.headers["content-type"]
+    text = response.text
+    assert '"done": true' in text
+    assert '"FastAPI"' in text

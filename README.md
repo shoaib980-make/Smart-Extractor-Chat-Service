@@ -31,15 +31,29 @@ Smart Extractor & Chat Service/
 │   ├── main.py
 │   ├── llm_service.py
 │   ├── structured_extractor.py
+│   ├── evaluate_extractor.py
+│   ├── evaluation_dataset.json
+│   ├── evaluation_results.json
+│   ├── prompts/
+│   │   └── templates.json
 │   ├── test_api.py
 │   ├── test_extractor.py
 │   ├── test_error_handling.py
 │   ├── test_llm_service.py
+│   ├── test_prompt_retry.py
 │   ├── test_structured_output.py
 │   ├── token_count.py
 │   ├── requirements.txt
 │   └── .env.example
+├── frontend/
+│   ├── src/
+│   └── package.json
 ├── node_lab/
+│   ├── first_call.mjs
+│   └── package.json
+├── PROMPT_ENGINEERING_REPORT.md
+├── BAD_PROMPTS.md
+├── DEPLOYMENT.md
 ├── .gitignore
 └── README.md
 ```
@@ -78,7 +92,7 @@ Create a `.env` file inside `python_lab/`:
 
 ```env
 OPENROUTER_API_KEY=your_api_key_here
-OPENROUTER_MODEL=nvidia/nemotron-3-super-120b-a12b:free
+OPENROUTER_MODEL=openrouter/free
 ```
 
 Use your own API key. Never commit `.env` to GitHub.
@@ -103,6 +117,7 @@ http://127.0.0.1:8000/docs
 | GET | `/health` | Health check |
 | POST | `/extract` | Extract structured information |
 | POST | `/chat` | Generate an LLM response |
+| POST | `/chat/stream` | Stream an LLM response via SSE |
 
 ## Example Requests
 
